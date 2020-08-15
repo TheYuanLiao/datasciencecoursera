@@ -1,0 +1,94 @@
+---
+title: "Top Severe Weather Events in US 1950 - 2011"
+author: "Yuan Liao"
+date: "8/15/2020"
+output: html_document
+---
+It is of great importance to minimize the fatalities, injuries, and property damage caused by many severe weather events. This report looks into the storm database of the U.S. National Oceanic and Atmospheric Administration's (NOAA) to answer the below two questions:
+
+1. Across the United States, which types of events are most harmful with respect to population health?
+2. Across the United States, which types of events have the greatest economic consequences?
+
+The raw data set is retrieved from [Storm Data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2) that spans from the year 1950 to November 2011.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+```
+
+## Data processing
+
+Load data and select the relevant columns for answering the questions: EVTYPE, FATALITIES, INJURIES, PROPDMG, and PROPDMGEXP.
+
+```{r load}
+df <- read.csv("repdata_data_StormData.csv.bz2")
+relevant_vars <- c('EVTYPE', 'FATALITIES', 'INJURIES', 
+                   'PROPDMG', 'PROPDMGEXP')
+df <- df[,relevant_vars]
+summary(df)
+```
+
+The raw data separate the number and the unit of property loss. The below chunk process it to produce a new column called PROPLOSS in $. And for the ease of discussion, the number of injuries and fatalities are added to a new column called INJDEATHS.
+
+```{r clean}
+mapping <- list(1e3, 1e6, 1e9)
+names(mapping) <- c('K', 'M', 'B')
+
+df <- df %>% 
+  mutate(prop_multiplier = mapping[PROPDMGEXP]) %>%
+  rowwise() %>%
+  mutate(prop_multiplier = ifelse(is.null(prop_multiplier), 1, prop_multiplier))
+
+df <- df %>%
+  mutate(INJDEATHS = FATALITIES + INJURIES,
+         PROPLOSS = PROPDMG * prop_multiplier)
+```
+
+Calculate the total property loss and the total number of injuries and fatalities by event type. And the below chunk extracts the top 10 events of greatest injuries and fatalities and property loss respectively.
+
+```{r cal}
+df_ev <- df %>%
+  group_by(EVTYPE) %>%
+  summarize(proploss = sum(PROPLOSS) / 1e9,
+            injdeaths = sum(INJDEATHS) / 1e3, .groups="drop") %>%
+  mutate(proploss_rank = dense_rank(desc(proploss)),
+         injdeaths_rank = dense_rank(desc(injdeaths))) %>%
+  arrange(proploss_rank)
+  
+df_ev_prop <- df_ev %>%
+  filter(proploss_rank %in% 1:10) %>%
+  arrange(proploss_rank)
+
+df_ev_injdeaths <- df_ev %>%
+  filter(injdeaths_rank %in% 1:10) %>%
+  arrange(injdeaths_rank)
+```
+
+## Visualize the top 10 events and discussion
+
+During 1950 - 2011, the most harmful severe weather events in the US with respect to population health are TORNADO, EXCESSIVE HEAT, TSTM WIND, FLOOD, LIGHTNING, HEAT, FLASH FLOOD, ICE STORM, THUNDERSTORM WIND, and WINTER STORM.
+
+Regarding the greatest economic consequences, the top 10 events are FLOOD, HURRICANE/TYPHOON, TORNADO, STORM SURGE, FLASH FLOOD, HAIL, HURRICANE, TROPICAL STORM, WINTER STORM, and HIGH WIND.
+
+TORNADO, FLOOD, FLASH FLOOD, and WINTER STORM are among the severe weather events of both greatest economic consequences and fatalities and injuries. Extra attention should be paid to them.
+
+```{r vis, echo=FALSE}
+g1 <- ggplot(data=df_ev_injdeaths, aes(x=reorder(EVTYPE, injdeaths), y=injdeaths)) +
+  geom_bar(stat = "identity") +
+  labs(x='Event', y='Total injuries and fatalities (K capita)', 
+       title='Top 10 most harmful events to population health') +
+  coord_flip() +
+  theme_minimal()
+
+g2 <- ggplot(data=df_ev_prop, aes(x=reorder(EVTYPE, proploss), y=proploss)) +
+  geom_bar(stat = "identity") +
+  labs(x='Event', y='Total property loss (billion $)', 
+       title='Top 10 events of greatest economic consequences') +
+  coord_flip() +
+  theme_minimal()
+
+ggarrange(g1, g2, ncol = 1, nrow = 2)
+```
+
