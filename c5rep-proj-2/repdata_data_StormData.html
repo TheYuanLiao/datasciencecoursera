@@ -376,7 +376,7 @@ summary {
 </ol>
 <p>The raw data set is retrieved from <a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2">Storm Data</a> that spans from the year 1950 to November 2011.</p>
 <div id="data-processing" class="section level2">
-<h2>Data processing</h2>
+<h2>Data Processing</h2>
 <p>Load data and select the relevant columns for answering the questions: EVTYPE, FATALITIES, INJURIES, PROPDMG, and PROPDMGEXP.</p>
 <pre class="r"><code>df &lt;- read.csv(&quot;repdata_data_StormData.csv.bz2&quot;)
 relevant_vars &lt;- c(&#39;EVTYPE&#39;, &#39;FATALITIES&#39;, &#39;INJURIES&#39;, 
@@ -426,8 +426,8 @@ df_ev_injdeaths &lt;- df_ev %&gt;%
   filter(injdeaths_rank %in% 1:10) %&gt;%
   arrange(injdeaths_rank)</code></pre>
 </div>
-<div id="visualize-the-top-10-events-and-discussion" class="section level2">
-<h2>Visualize the top 10 events and discussion</h2>
+<div id="results" class="section level2">
+<h2>Results</h2>
 <p>During 1950 - 2011, the most harmful severe weather events in the US with respect to population health are TORNADO, EXCESSIVE HEAT, TSTM WIND, FLOOD, LIGHTNING, HEAT, FLASH FLOOD, ICE STORM, THUNDERSTORM WIND, and WINTER STORM.</p>
 <p>Regarding the greatest economic consequences, the top 10 events are FLOOD, HURRICANE/TYPHOON, TORNADO, STORM SURGE, FLASH FLOOD, HAIL, HURRICANE, TROPICAL STORM, WINTER STORM, and HIGH WIND.</p>
 <p>TORNADO, FLOOD, FLASH FLOOD, and WINTER STORM are among the severe weather events of both greatest economic consequences and fatalities and injuries. Extra attention should be paid to them.</p>

@@ -18,7 +18,7 @@ library(ggplot2)
 library(ggpubr)
 ```
 
-## Data processing
+## Data Processing
 
 Load data and select the relevant columns for answering the questions: EVTYPE, FATALITIES, INJURIES, PROPDMG, and PROPDMGEXP.
 
@@ -66,7 +66,7 @@ df_ev_injdeaths <- df_ev %>%
   arrange(injdeaths_rank)
 ```
 
-## Visualize the top 10 events and discussion
+## Results
 
 During 1950 - 2011, the most harmful severe weather events in the US with respect to population health are TORNADO, EXCESSIVE HEAT, TSTM WIND, FLOOD, LIGHTNING, HEAT, FLASH FLOOD, ICE STORM, THUNDERSTORM WIND, and WINTER STORM.
 
