@@ -44,7 +44,7 @@ colnames(df_sim) <- c('sim_#', 'mean', 'var')
 
 ## Sample Mean versus Theoretical Mean
 
-Calculate the sample mean and theoretical mean.
+Calculate the sample mean and theoretical mean. They are close.
 
 ```{r mean, echo=TRUE}
 # Get theoretical mean
@@ -55,6 +55,57 @@ sample.mean <- mean(df_sim$mean)
 
 print(cbind(theo.mean, sample.mean))
 ```
+
+## Sample Variance versus Theoretical Variance
+
+Calculate the sample variance and theoretical variance. They are close.
+
+```{r var, echo=TRUE}
+# Get theoretical variance
+theo.var <- (1/lambda)^2
+
+# Get sample variance mean
+sample.var <- mean(df_sim$var)
+
+print(cbind(theo.var, sample.var))
+```
+
+
+## Distribution
+One can tell the distribution is approximately normal. We first generate a Gaussian distribution with the same mean and variance as the simulated mean results.
+
+```{r gaus, echo=TRUE}
+# Get sample mean
+sample.mean <- mean(df_sim$mean)
+
+# Get variance of sample mean
+sample.mean.var <- var(df_sim$mean)
+
+```
+
+Visualize the results where the sample density curve looks similar to the normal distribution with the sample mean and standard deviation.
+```{r gs.vis, echo=TRUE}
+# Visualize the results
+ggplot(data = df_sim, aes(x=mean)) +
+  geom_histogram(aes(y=..density..), binwidth = 0.25) +
+  geom_density(aes(color = 'Sample data')) +
+  stat_function(fun=dnorm, 
+                args=list(mean=sample.mean,
+                          sd=sqrt(sample.mean.var)),
+                aes(colour = "Normal distribution")) +
+  scale_colour_manual('Density curve', values=c('black', 'darkred')) +
+  labs(title='40 Exponentials over 1000 Simulations',
+       x='Mean',
+       y='Frequency rate') +
+  theme_minimal()
+
+```
+
+## Conclusions
+Given the assumption that the sample represents the population, the results confirm the Central Limit Theorem.
+
+\pagebreak
+## Appendix
 
 Visualize the results where the sample mean and theoretical mean are illustrated.
 
@@ -76,20 +127,6 @@ ggplot(data = df_sim, aes(x=mean)) +
 
 ```
 
-## Sample Variance versus Theoretical Variance
-
-Calculate the sample variance and theoretical variance.
-
-```{r var, echo=TRUE}
-# Get theoretical variance
-theo.var <- (1/lambda)^2
-
-# Get sample variance mean
-sample.var <- mean(df_sim$var)
-
-print(cbind(theo.var, sample.var))
-```
-
 Visualize the results where the sample variance and theoretical variance are illustrated.
 
 ```{r var.vis, echo=TRUE}
@@ -109,36 +146,3 @@ ggplot(data = df_sim, aes(x=var)) +
   theme_minimal()
 
 ```
-
-## Distribution
-One can tell the distribution is approximately normal. We first generate a Gaussian distribution with the same mean and variance as the simulated mean results.
-
-```{r gaus, echo=TRUE}
-# Get sample mean
-sample.mean <- mean(df_sim$mean)
-
-# Get variance of sample mean
-sample.var <- var(df_sim$mean)
-
-```
-
-Visualize the results where the sample density curve looks similar to the normal distribution with the sample mean and standard deviation.
-```{r gs.vis, echo=TRUE}
-# Visualize the results
-ggplot(data = df_sim, aes(x=mean)) +
-  geom_histogram(aes(y=..density..), binwidth = 0.25) +
-  geom_density(aes(color = 'Sample data')) +
-  stat_function(fun=dnorm, 
-                args=list(mean=sample.mean,
-                          sd=sqrt(sample.var)),
-                aes(colour = "Normal distribution")) +
-  scale_colour_manual('Density curve', values=c('black', 'darkred')) +
-  labs(title='40 Exponentials over 1000 Simulations',
-       x='Mean',
-       y='Frequency rate') +
-  theme_minimal()
-
-```
-
-## Conclusions
-Given the assumption that the sample represents the population, the results confirms the Central Limit Theorem.

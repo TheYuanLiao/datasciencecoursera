@@ -26,17 +26,17 @@ data('ToothGrowth')
 summary(ToothGrowth)
 ```
 
-Show the unique values.
+Show the unique values of dose which looks like a categorical variable.
 ```{r data.exp, echo=TRUE}
-# Load necessary libs
-for (v in names(ToothGrowth)) {
-  print(unique(ToothGrowth[, v]))
-}
+print(unique(ToothGrowth$dose))
+
 ```
 
 ```{r data.exp.vs, echo=TRUE}
 # Take a look at the data
-ggplot(ToothGrowth, aes(x=factor(dose, levels = c(0.5, 1.0, 2.0)), y=len, group=factor(dose, levels = c(0.5, 1.0, 2.0)))) + 
+ggplot(ToothGrowth, aes(x=factor(dose, levels = c(0.5, 1.0, 2.0)), 
+                        y=len, 
+                        group=factor(dose, levels = c(0.5, 1.0, 2.0)))) + 
   geom_violin(aes(fill=len)) +
   facet_grid(supp ~ dose, labeller=label_both) +
   labs(x='Dose', y='Length') +
@@ -63,17 +63,9 @@ t.test(len~dose,data=ToothGrowth[ToothGrowth$dose %in% c(0.5, 1),])
 ```
 It turns out that p-value < 0.001. Therefore, the hypothesis is accepted.
 
-### Hypothesis 3: dose = 0.5 and does = 2 have different distributions of tooth length
+### Hypothesis 3: dose = 1 and does = 2 have different distributions of tooth length
 
 ```{r does.2, echo=TRUE}
-t.test(len~dose,data=ToothGrowth[ToothGrowth$dose %in% c(0.5, 2),])
-
-```
-It turns out that p-value < 0.001. Therefore, the hypothesis is accepted.
-
-### Hypothesis 4: dose = 1 and does = 2 have different distributions of tooth length
-
-```{r does.3, echo=TRUE}
 t.test(len~dose,data=ToothGrowth[ToothGrowth$dose %in% c(1, 2),])
 
 ```
