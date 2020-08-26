@@ -1,0 +1,93 @@
+---
+title: "Statistical Inference Course Project - Basic inferential data analysis"
+author: "Yuan Liao"
+date: "8/26/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+This is an R Markdown document for Statistical Inference Course Project - part 2. Here, we're going to analyze the ToothGrowth data in the R datasets package.
+
+```{r lib, echo=TRUE}
+# Load necessary libs
+library(ggplot2)
+```
+
+## Load data for exploratory data analysis
+Load data and take a look.
+```{r data, echo=TRUE}
+# Load necessary libs
+data('ToothGrowth')
+summary(ToothGrowth)
+```
+
+Show the unique values.
+```{r data.exp, echo=TRUE}
+# Load necessary libs
+for (v in names(ToothGrowth)) {
+  print(unique(ToothGrowth[, v]))
+}
+```
+
+```{r data.exp.vs, echo=TRUE}
+# Take a look at the data
+ggplot(ToothGrowth, aes(x=factor(dose, levels = c(0.5, 1.0, 2.0)), y=len, group=factor(dose, levels = c(0.5, 1.0, 2.0)))) + 
+  geom_violin(aes(fill=len)) +
+  facet_grid(supp ~ dose, labeller=label_both) +
+  labs(x='Dose', y='Length') +
+  theme_bw()
+```
+
+## Compare tooth growth by supp and dose
+
+Two-sample t test is applied to compare the impact of supp and dose on len with confidence interval = 95%.
+
+### Hypothesis 1: two supplement groups have different distributions of tooth length
+
+```{r supp, echo=TRUE}
+t.test(len~supp,data=ToothGrowth)
+
+```
+It turns out that p-value is 0.06 which is greater than 0.05. Therefore, the hypothesis is rejected.
+
+### Hypothesis 2: dose = 0.5 and does = 1 have different distributions of tooth length
+
+```{r does.1, echo=TRUE}
+t.test(len~dose,data=ToothGrowth[ToothGrowth$dose %in% c(0.5, 1),])
+
+```
+It turns out that p-value < 0.001. Therefore, the hypothesis is accepted.
+
+### Hypothesis 3: dose = 0.5 and does = 2 have different distributions of tooth length
+
+```{r does.2, echo=TRUE}
+t.test(len~dose,data=ToothGrowth[ToothGrowth$dose %in% c(0.5, 2),])
+
+```
+It turns out that p-value < 0.001. Therefore, the hypothesis is accepted.
+
+### Hypothesis 4: dose = 1 and does = 2 have different distributions of tooth length
+
+```{r does.3, echo=TRUE}
+t.test(len~dose,data=ToothGrowth[ToothGrowth$dose %in% c(1, 2),])
+
+```
+It turns out that p-value < 0.001. Therefore, the hypothesis is accepted.
+
+## Conclusions
+With the below assumptions:
+
+1. The analyzed data respresent the true population.
+
+2. Multi-level comparison is approximated by a series of two-sample t tests.
+
+3. Ignore the interaction between supplement and dose on tooth length.
+
+4. Sample/population data follow normal distribution.
+
+There is no effect of supplement on tooth length. The higer the dose, the greater the tooth length.
