@@ -1,0 +1,102 @@
+---
+title: "Regression Models Course Project"
+author: "Yuan Liao"
+date: "9/20/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r library, include=FALSE, echo=TRUE}
+library(PerformanceAnalytics)
+```
+## Executive summary
+
+Looking at a data set of a collection of cars, this project explores the relationship between a set of variables and miles per gallon (MPG) (outcome). Particularly, this project looks into the below two aspects:
+
+1 Is an automatic or manual transmission better for MPG
+
+2 Quantify the MPG difference between automatic and manual transmissions
+
+### Q1 Is an automatic or manual transmission better for MPG
+Both models output suggest that a manual transmission is better for MPG than an automatic transmission.
+
+### Q2 Quantify the MPG difference between automatic and manual transmissions
+In the single-variable model, the manual transmission has 7.245 more MPG than the automatic one. However, this quantity is ascribed to the other factors.
+
+In the selected model, the advantage of have a manual transmission on MPG is 1.375 given the same number of cylinders (cyl), displacement (disp), gross horsepower (hp), rear axle ratio (drat), and weight (wt).
+
+## Model design
+According to the exploratory analysis in the appendix, we have found that 1) Miles/(US) gallon (mpg) is lower for the automatic than the manual (am), and 2) The observed difference between the automatic and the manual can be affected by the other factors such as cyl, disp, hp, drat, and wt.
+
+Therefore, we try two models; one uses mpg vs am (Single-variable regression model) and the other uses mpg vs am among other variables (Multivariate regression model). Single-variable regression model has adjusted R-squared of 0.3385 which is lower than Multivariate regression model's 0.8211. Also by comparing these two models' residuals, we select the multivariate model.
+
+### Single-variable regression model
+```{r single}
+fit.single <- lm(mpg ~ am, data = mtcars)
+summary(fit.single)
+```
+
+### Multivariate regression model
+```{r multi}
+fit.multi <- lm(mpg ~ am + cyl + disp + hp + drat + wt, data = mtcars)
+summary(fit.multi)
+```
+
+## Appendix
+
+### Dataset
+A dataframe with 32 observations on 11 (numeric) variables.
+
+[, 1]	mpg	Miles/(US) gallon
+
+[, 2]	cyl	Number of cylinders
+
+[, 3]	disp	Displacement (cu.in.)
+
+[, 4]	hp	Gross horsepower
+
+[, 5]	drat	Rear axle ratio
+
+[, 6]	wt	Weight (1000 lbs)
+
+[, 7]	qsec	1/4 mile time
+
+[, 8]	vs	Engine (0 = V-shaped, 1 = straight)
+
+[, 9]	am	Transmission (0 = automatic, 1 = manual)
+
+[,10]	gear	Number of forward gears
+
+[,11]	carb	Number of carburetors
+
+### Exploratory analysis
+This part takes a look at the original dataset and visualize it with the focus on the mpg vs. am, which might be affected by the other variables. First, let's take a look at the data.
+
+```{r glimpse}
+head(mtcars)
+```
+
+How mpg of different transmission types look like is visualized below.
+```{r mpg_am}
+boxplot(mpg ~ am, data = mtcars, xlab = "Transmission type", ylab = "Miles per gallon")
+
+```
+
+### Variables selection
+This step explores the relationship between all the variables to identify what variables to include into the modelling.
+
+The difference of mpg between the transimission types might be caused by the other factors. Now let's see how these variables are correlated with each other. According to the below figure, the variables involved to answer the target questions are mpg and am, as well as cyl, disp, hp, drat, and wt.
+
+```{r corr}
+chart.Correlation(mtcars, histogram=TRUE, pch=19)
+```
+
+## Residual plot
+```{r resi}
+par(mfrow = c(2,2))
+plot(fit.multi)
+```
+
