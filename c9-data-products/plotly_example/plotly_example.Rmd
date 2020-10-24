@@ -1,5 +1,5 @@
 ---
-title: "Prevalance of geotagged tweets in 23 global regions"
+title: "Prevalence of geotagged tweets in 23 global regions"
 author: "Yuan Liao"
 date: "10/24/2020"
 output: ioslides_presentation
@@ -27,7 +27,7 @@ df <- df %>%
 head(df)
 ```
 
-## Prevalance of geotweeting vs. GDP
+## Prevalence of geotweeting vs. GDP
 
 ```{r plot, warning=FALSE, message=FALSE, echo=FALSE}
 plot_ly(df, x = ~gdp_capita, y = ~num_per_user, 
