@@ -1,0 +1,41 @@
+---
+title: "Prevalance of geotagged tweets in 23 global regions"
+author: "Yuan Liao"
+date: "10/24/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(plotly)
+```
+
+## Introduction
+
+- This is an R Markdown presentation showing an example of plotly data visualization
+- The data used were collected from the top geotag users' timelines in each country/city
+
+## Data
+
+```{r load, echo = TRUE}
+df <- read.csv('data.csv')
+df <- df %>%
+  mutate(num_per_user = num_geotweets/num_users) %>%
+  select(c('region_name', 'gdp_capita', 'num_per_user', 'country'))
+
+head(df)
+```
+
+## Prevalance of geotweeting vs. GDP
+
+```{r plot, warning=FALSE, message=FALSE, echo=FALSE}
+plot_ly(df, x = ~gdp_capita, y = ~num_per_user, 
+        type = "scatter", color = ~factor(country), size=3) %>%
+  add_text(x = ~gdp_capita*1.01, y = ~num_per_user*1.01, text= ~region_name, 
+           hoverinfo='none', textposition = 'right',
+           showlegend = FALSE, textfont=list(size=10, color= 'gray')) %>%
+  layout(xaxis=list(title='GDP (kUSD/capita/year), nominal', range=c(0, 65)),
+         yaxis=list(title='No. of geotagged tweets/user'), range=c(100, 450))
+```
+
